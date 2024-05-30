@@ -1,8 +1,9 @@
-import Toast from '@components/common/Toast/Toast';
 import { createContext, useCallback, useContext, useRef, useState } from 'react';
 
+import Toast from '@components/common/Toast/Toast';
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const ToastContext = createContext({ showToast: (message: string) => {} });
+export const ToastContext = createContext({ showToast: (_: string) => {} });
 
 export const useToastContext = () => {
   const value = useContext(ToastContext);
