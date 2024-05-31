@@ -1,14 +1,17 @@
+import Toast from '@components/common/Toast/Toast';
+import {
+  ANIMATION_DURATION,
+  TOAST_DISPLAY_DURATION,
+} from '@components/common/Toast/provider/ToastProvidet.constant';
 import { createContext, useCallback, useContext, useRef, useState } from 'react';
 
-import Toast from '@components/common/Toast/Toast';
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const ToastContext = createContext({ showToast: (_: string) => {} });
+export const ToastContext = createContext((_: string) => {});
 
 export const useToastContext = () => {
   const value = useContext(ToastContext);
 
-  if (!value) throw new Error('provider가 필요합니다.');
+  if (!value) throw new Error('ToastProvider 내부에서 사용해야 합니다.');
   return value;
 };
 
@@ -33,14 +36,14 @@ const ToastProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
       setTimeout(() => {
         setMessage('');
         setIsRemove(true);
-      }, 500);
-    }, 1000);
+      }, ANIMATION_DURATION);
+    }, TOAST_DISPLAY_DURATION);
 
     toastTimer.current = timer;
   }, []);
 
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={showToast}>
       {children}
       {!isRemove && <Toast isOpen={isOpenToast} message={message} />}
     </ToastContext.Provider>
