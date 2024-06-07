@@ -5,8 +5,11 @@ import svgr from 'vite-plugin-svgr';
 
 // https://vitejs.dev/config/
 
+const BASE_URL = process.env.NODE_ENV === 'production' ? '/react-shopping-products/dist' : '/';
+
 export default defineConfig({
   plugins: [react(), svgr()],
+  base: BASE_URL,
   resolve: {
     alias: [
       { find: '@src', replacement: resolve(__dirname, 'src') },
