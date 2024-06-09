@@ -1,30 +1,25 @@
 import { updateCartItemQuantity } from '@apis/shoppingCart/shoppingCart';
 import { CartItem } from '@appTypes/product';
 import { InfinityScrollResponse } from '@appTypes/response';
-import { useToastContext } from '@components/common/Toast/provider/ToastProvider';
+import { QUERY_KEY } from '@queries/queryKey';
 import { UseMutationResult, useMutation, useQueryClient } from '@tanstack/react-query';
 
-const useUpdateItemQuantity = (): UseMutationResult<
-  void,
-  Error,
-  { id: number; quantity: number },
-  unknown
-> => {
+const usePatchItemQuantity = (
+  showToast: (message: string) => void
+): UseMutationResult<void, Error, { id: number; quantity: number }, unknown> => {
   const queryClient = useQueryClient();
-
-  const showToast = useToastContext();
 
   return useMutation({
     mutationFn: updateCartItemQuantity,
     onMutate: async ({ id, quantity }) => {
-      await queryClient.cancelQueries({ queryKey: ['cart-items'] });
+      await queryClient.cancelQueries({ queryKey: QUERY_KEY.cartItems });
 
-      const previousCartItems = queryClient.getQueryData<InfinityScrollResponse<CartItem[]>>([
-        'cart-items',
-      ]);
+      const previousCartItems = queryClient.getQueryData<InfinityScrollResponse<CartItem[]>>(
+        QUERY_KEY.cartItems
+      );
 
       queryClient.setQueryData<InfinityScrollResponse<CartItem[]>>(
-        ['cart-items'],
+        QUERY_KEY.cartItems,
         (oldCartItems) =>
           oldCartItems && {
             ...oldCartItems,
@@ -38,7 +33,7 @@ const useUpdateItemQuantity = (): UseMutationResult<
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart-items'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY.cartItems });
     },
 
     onError: (error, _, context) => {
@@ -46,9 +41,9 @@ const useUpdateItemQuantity = (): UseMutationResult<
 
       if (!context?.previousCartItems) return;
 
-      queryClient.setQueryData(['cart-items'], context?.previousCartItems);
+      queryClient.setQueryData(QUERY_KEY.cartItems, context?.previousCartItems);
     },
   });
 };
 
-export default useUpdateItemQuantity;
+export default usePatchItemQuantity;

@@ -1,5 +1,8 @@
 import { CartItemsEndpointParams } from '@apis/shoppingCart/shoppingCart.type';
-import { DEFAULT_SIZE, INIT_PAGE } from '@hooks/product/useProducts/useProducts.constant';
+import {
+  DEFAULT_SIZE,
+  INIT_PAGE,
+} from '@hooks/product/useProductsWithPagination/useProductsWithPagination.constant';
 import { generateQueryParams } from '@utils/queryString';
 
 export const getCartItemsEndpoint = ({
@@ -10,6 +13,5 @@ export const getCartItemsEndpoint = ({
 
   const queryString = generateQueryParams({ page, size }).toString();
 
-  console.log(`${baseEndpoint}?${queryString}`);
   return `${baseEndpoint}?${queryString}`;
 };

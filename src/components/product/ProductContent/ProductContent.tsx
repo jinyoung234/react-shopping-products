@@ -1,40 +1,34 @@
-import NotProduct from '@components/product/NotProduct/NotProduct';
-
-import CardList from '@components/product/CardList/CardList';
 import LoadingSpinner from '@components/common/LoadingSpinner/LoadingSpinner';
-import useIntersectionObserver from '@hooks/useIntersectionObserver';
-import useProducts from '@hooks/product/useProducts/useProducts';
+import useProductsWithPagination from '@hooks/product/useProductsWithPagination/useProductsWithPagination';
 import { ProductDropdownOptions } from '@components/product/ProductDropdown/ProductDropdown.type';
 
 import * as Styled from './ProductContent.styled';
+
+import { INIT_PAGE } from '@hooks/product/useProductsWithPagination/useProductsWithPagination.constant';
+import CardList from '@components/product/CardList/CardList';
+import { useToastContext } from '@components/common/Toast/provider/ToastProvider';
+import TargetObserver from '@components/common/TargetObserver/TargetObserver';
 
 interface ProductContentProps {
   dropdownOptions: ProductDropdownOptions;
 }
 
 const ProductContent = ({ dropdownOptions }: ProductContentProps) => {
-  const { products, isLoading, updateNextProductItem } = useProducts(dropdownOptions);
+  const showToast = useToastContext();
 
-  const targetRef = useIntersectionObserver<HTMLDivElement>({
-    onIntersect: () => {
-      updateNextProductItem();
-    },
+  const { products, isLoading, updateNextProductItem, page } = useProductsWithPagination({
+    dropdownOptions,
+    showToast,
   });
 
   return (
-    <>
-      {products.length === 0 ? (
-        <NotProduct />
-      ) : (
-        <Styled.ProductPageListWrapper>
-          <CardList products={products} />
-        </Styled.ProductPageListWrapper>
-      )}
+    <TargetObserver onIntersect={updateNextProductItem}>
+      <Styled.ProductPageListWrapper>
+        <CardList products={products} />
+      </Styled.ProductPageListWrapper>
 
-      {products.length !== 0 && isLoading && <LoadingSpinner $width="100%" $height="30vh" />}
-
-      <Styled.ObserverTarget ref={targetRef} />
-    </>
+      {page > INIT_PAGE && isLoading && <LoadingSpinner $width="100%" $height="30vh" />}
+    </TargetObserver>
   );
 };
 
